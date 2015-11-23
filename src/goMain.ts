@@ -19,6 +19,7 @@ import { check, ICheckResult } from './goCheck';
 import { setupGoPathAndOfferToInstallTools } from './goInstallTools'
 import { GO_MODE } from './goMode'
 import { showHideStatus } from './goStatus'
+import { getBinPath } from './goPath'
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -84,6 +85,15 @@ export function activate(ctx: vscode.ExtensionContext): void {
 
 function deactivate() {
 }
+
+// TODO: This should get moved into `deactivate` 
+// once VS Code supports that correctly. Also
+// deactivation logic should be moved into each
+// of the individual feature provider.
+process.on('exit', code => {
+	var gocode = getBinPath("gocode");
+	cp.execFile(gocode, ["close"], {}, (err, stdout, stderr) => {});
+});
 
 function startBuildOnSaveWatcher() {
 
